@@ -12,7 +12,7 @@ from langchain_huggingface import HuggingFaceEmbeddings
 # =======================================
 #              CONFIG
 # =======================================
-BASE_KNOWLEDGE_PATH = MINI_Radhakrishnan-sir.pdf  # Your GIS base document
+BASE_KNOWLEDGE_PATH = "MINI_Radhakrishnan-sir.pdf"  # Your GIS base document
 
 try:
     GROQ_API_KEY = st.secrets["GROQ_API_KEY"]
@@ -207,6 +207,7 @@ if prompt := st.chat_input("Ask about GIS, remote sensing, or geospatial..."):
         st.markdown(answer)
 
     st.session_state.messages.append({"role": "assistant", "content": answer})
+
 
 
 
