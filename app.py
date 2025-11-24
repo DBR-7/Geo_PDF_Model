@@ -212,3 +212,4 @@ if prompt := st.chat_input("Ask about GIS, remote sensing, or geospatial..."):
 
 
 
+
