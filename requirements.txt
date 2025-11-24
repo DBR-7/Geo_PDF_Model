@@ -1,0 +1,10 @@
+streamlit
+groq
+langchain
+langchain-community
+langchain-text-splitters
+langchain-huggingface
+faiss-cpu
+pypdf
+sentence-transformers
+torch
