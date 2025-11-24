@@ -9,11 +9,12 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_community.vectorstores import FAISS
 from langchain_huggingface import HuggingFaceEmbeddings
 
-import os
-st.write("Current Working Directory:", os.getcwd())
-st.write("Files available:", os.listdir(os.getcwd()))
-BASE_KNOWLEDGE_PATH = os.path.abspath("MINI_Radhakrishnan-sir.pdf")
-st.write("PDF Path Used:", BASE_KNOWLEDGE_PATH)
+if "base_db" not in st.session_state:
+    st.session_state.base_db = None
+if "user_db" not in st.session_state:
+    st.session_state.user_db = None
+if "messages" not in st.session_state:
+    st.session_state.messages = []
 
 # =======================================
 #              CONFIG
@@ -213,6 +214,7 @@ if prompt := st.chat_input("Ask about GIS, remote sensing, or geospatial..."):
         st.markdown(answer)
 
     st.session_state.messages.append({"role": "assistant", "content": answer})
+
 
 
 
