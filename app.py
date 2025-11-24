@@ -9,13 +9,6 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_community.vectorstores import FAISS
 from langchain_huggingface import HuggingFaceEmbeddings
 
-if "base_db" not in st.session_state:
-    st.session_state.base_db = None
-if "user_db" not in st.session_state:
-    st.session_state.user_db = None
-if "messages" not in st.session_state:
-    st.session_state.messages = []
-
 # =======================================
 #              CONFIG
 # =======================================
@@ -31,27 +24,26 @@ except Exception:
 # =======================================
 @st.cache_resource
 def load_base_gis(embedding_model, pdf_path):
-    """
-    Loads the base GIS PDF into a FAISS vector DB.
-    IMPORTANT: This must NOT be a class method.
-    """
-
     if not os.path.exists(pdf_path):
         st.error(f"Base PDF missing in repo: {pdf_path}")
+        st.write("Files available:", os.listdir(os.getcwd()))
         return None
 
-    with st.spinner("Loading GIS Reference Document…"):
-        docs = PyPDFLoader(pdf_path).load()
+    try:
+        with st.spinner("Loading GIS Reference Document…"):
+            docs = PyPDFLoader(pdf_path).load()
+    except Exception as e:
+        st.error(f"PDF Load Error: {e}")
+        st.write("Files available:", os.listdir(os.getcwd()))
+        return None
 
-    splitter = RecursiveCharacterTextSplitter(
-        chunk_size=800, chunk_overlap=100
-    )
+    splitter = RecursiveCharacterTextSplitter(chunk_size=800, chunk_overlap=100)
     chunks = splitter.split_documents(docs)
 
     db = FAISS.from_documents(chunks, embedding_model)
-
     st.success(f"GIS Document Loaded Successfully ({len(chunks)} chunks)")
     return db
+
 
 # =======================================
 #         DUAL RAG ENGINE (GIS)
@@ -214,6 +206,7 @@ if prompt := st.chat_input("Ask about GIS, remote sensing, or geospatial..."):
         st.markdown(answer)
 
     st.session_state.messages.append({"role": "assistant", "content": answer})
+
 
 
 
