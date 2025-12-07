@@ -113,19 +113,20 @@ class DualGeospatialRAG:
         # --- BASE GIS DOC ---
         if st.session_state.base_db:
             try:
-                base_results = st.session_state.base_db.similarity_search(query, k=3)
+                # Slightly increase k for more coverage
+                base_results = st.session_state.base_db.similarity_search(query, k=4)
                 text = "\n".join(doc.page_content for doc in base_results)
                 context_parts.append(f"--- BASE GIS DOCUMENT ---\n{text}")
-            except:
+            except Exception:
                 pass
 
         # --- USER DOC ---
         if st.session_state.user_db:
             try:
-                usr_results = st.session_state.user_db.similarity_search(query, k=3)
+                usr_results = st.session_state.user_db.similarity_search(query, k=4)
                 text = "\n".join(doc.page_content for doc in usr_results)
                 context_parts.append(f"--- USER DOCUMENT ---\n{text}")
-            except:
+            except Exception:
                 pass
 
         return "\n\n".join(context_parts)
@@ -134,15 +135,28 @@ class DualGeospatialRAG:
         context = self.retrieve(message)
 
         if context:
+            # Stronger and more explicit instructions to stay in context
             system_msg = (
                 "You are a Senior GIS and Geospatial Analytics Expert. "
-                "Answer ONLY using the provided context. "
-                "For each answer, clearly explain reasoning based on the retrieved context and display relevant excerpts."
+                "You MUST answer ONLY using the information from the provided context. "
+                "If the answer is not clearly supported by the context, say "
+                "\"The answer is not available in the provided documents.\" "
+                "Do NOT use any outside knowledge or assumptions.\n\n"
+                "When you answer:\n"
+                "1. First, give a concise 2–3 sentence answer.\n"
+                "2. Then briefly explain your reasoning using the key ideas from the context.\n"
+                "3. Finally, list the most relevant short excerpts from the context as bullet points.\n"
+                "Keep the answer focused and avoid repetition."
             )
             user_msg = f"CONTEXT:\n{context}\n\nQUESTION: {message}"
             st.expander("Context Used").markdown(context)
         else:
-            system_msg = "You are a GIS/Geospatial expert. No documents available."
+            system_msg = (
+                "You are a GIS/Geospatial expert. "
+                "There are no reference documents available. "
+                "Answer concisely using your general knowledge, and explicitly mention that "
+                "no document context was available."
+            )
             user_msg = message
 
         try:
@@ -206,14 +220,3 @@ if prompt := st.chat_input("Ask about GIS, remote sensing, or geospatial..."):
         st.markdown(answer)
 
     st.session_state.messages.append({"role": "assistant", "content": answer})
-
-
-
-
-
-
-
-
-
-
-
