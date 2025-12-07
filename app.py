@@ -155,7 +155,7 @@ class DualGeospatialRAG:
     "3. Do NOT restate the same idea in both the paragraph and bullets using the same wording. "
     "Avoid redundancy and keep the answer as non-repetitive and compact as possible.\n"
     "4. If the question is out-of-domain or unsupported by the context, reply in a short paragraph such as: "
-    "\"As a geospatial and GIS specialist, this question falls outside my area of expertise and is not "
+    "\"As a Geospatial specialist, this question falls outside my area of expertise and is not "
     "addressed in the provided material, so I am not the right person to answer it.\"\n"
     "Keep every answer focused, compact, and non-repetitive."
 )
@@ -233,5 +233,6 @@ if prompt := st.chat_input("Ask about GIS, remote sensing, or geospatial..."):
         st.markdown(answer)
 
     st.session_state.messages.append({"role": "assistant", "content": answer})
+
 
 
